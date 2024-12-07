@@ -27,32 +27,21 @@ class Simulator
    public:
    // Constructor initializes the simulation
    Simulator(Position ptUpperRight) :
-   ptUpperRight(ptUpperRight),
-   pSputnik(new Sputnik()),
-   pHubble(new Hubble()),
-   pStarlink(new Starlink()),
-   pCrewDragon(new CrewDragon()),
-   pGPS(new GPS()),
-   pGPS2(new GPS(GPS().getInitialPositions()[1].first, GPS().getInitialPositions()[1].second)),
-   pGPS3(new GPS(GPS().getInitialPositions()[2].first, GPS().getInitialPositions()[2].second)),
-   pGPS4(new GPS(GPS().getInitialPositions()[3].first, GPS().getInitialPositions()[3].second)),
-   pGPS5(new GPS(GPS().getInitialPositions()[4].first, GPS().getInitialPositions()[4].second)),
-   pGPS6(new GPS(GPS().getInitialPositions()[5].first, GPS().getInitialPositions()[5].second)),
-   pShip(new Ship(satellites))
+   ptUpperRight(ptUpperRight)
    {
       
       // Initialize satellites list with initial satellites
-      satellites.push_back(pSputnik);
-      satellites.push_back(pHubble);
-      satellites.push_back(pStarlink);
-      satellites.push_back(pCrewDragon);
-      satellites.push_back(pGPS);
-      satellites.push_back(pGPS2);
-      satellites.push_back(pGPS3);
-      satellites.push_back(pGPS4);
-      satellites.push_back(pGPS5);
-      satellites.push_back(pGPS6);
-      satellites.push_back(pShip);
+      satellites.push_back(new Sputnik());
+      satellites.push_back(new Hubble());
+      satellites.push_back(new Starlink());
+      satellites.push_back(new CrewDragon());
+      satellites.push_back(new GPS());
+      satellites.push_back(new GPS(GPS().getInitialPositions()[1].first, GPS().getInitialPositions()[1].second));
+      satellites.push_back(new GPS(GPS().getInitialPositions()[2].first, GPS().getInitialPositions()[2].second));
+      satellites.push_back(new GPS(GPS().getInitialPositions()[3].first, GPS().getInitialPositions()[3].second));
+      satellites.push_back(new GPS(GPS().getInitialPositions()[4].first, GPS().getInitialPositions()[4].second));
+      satellites.push_back(new GPS(GPS().getInitialPositions()[5].first, GPS().getInitialPositions()[5].second));
+      satellites.push_back(new Ship(satellites));
       
       // Initialize the random stars
       for (int i = 0; i < NUM_STARS; i++)
@@ -65,23 +54,14 @@ class Simulator
       }
    }
    
-   // Destructor cleans up any allocated memory
-   ~Simulator()
-   {
-      delete pSputnik;
-      delete pHubble;
-      delete pStarlink;
-      delete pCrewDragon;
-      delete pGPS;
-      delete pGPS2;
-      delete pGPS3;
-      delete pGPS4;
-      delete pGPS5;
-      delete pGPS6;
-      delete pShip;
-   }
+   /*********************************************
+    * SIMULATOR: destructor
+    *********************************************/
+   ~Simulator() {}
    
-   // Move everything forward one time unit
+   /*********************************************
+    * SIMULATOR: update
+    *********************************************/
    void update(const Interface& pUI)
    {
       
@@ -94,9 +74,11 @@ class Simulator
          }
       }
       
-      if (pShip && !pShip->isDead())
+      auto itShip = satellites.begin();
+      std::advance(itShip, 10);
+      if ((*itShip) && !(*itShip)->isDead())
       {
-         pShip->input(pUI);
+         (*itShip)->input(pUI);
       }
       
       // Update star phases for twinkling
@@ -104,7 +86,9 @@ class Simulator
          phases[i] = (phases[i] + 1) % 256;
    }
    
-   // Draw everything on the screen
+   /*********************************************
+    * SIMULATOR: destructor
+    *********************************************/
    void draw(ogstream& gout)
    {
       // Draw the stars first (background)
@@ -128,17 +112,6 @@ class Simulator
    
    private:
    Position ptUpperRight;         // Size of the screen
-   Sputnik* pSputnik;            // The Sputnik satellite
-   Hubble* pHubble;
-   CrewDragon* pCrewDragon;
-   Starlink* pStarlink;
-   GPS* pGPS;
-   GPS* pGPS2;
-   GPS* pGPS3;
-   GPS* pGPS4;
-   GPS* pGPS5;
-   GPS* pGPS6;
-   Ship* pShip;
    std::list<Satellite*> satellites;
    static const int NUM_STARS = 100;
    Position stars[NUM_STARS];     // Array of star positions
